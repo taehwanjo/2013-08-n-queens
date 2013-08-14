@@ -96,28 +96,39 @@
     },
 
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow){
-    //  var pieceCount=0;
-    //  var diagonalLength = this.get('n') - majorDiagonalColumnIndexAtFirstRow;
-    //  for (var i = 1; i < diagonalLength; i++) {
-    //    if (this[i][majorDiagonalColumnIndexAtFirstRow+i] === 1) pieceCount++;
-    //  }
-    //  if (pieceCount > 1) return true;
+      var pieceCount=1;
+      var diagonalLength = this.get('n') - majorDiagonalColumnIndexAtFirstRow;
+      for (var i = 1; i < diagonalLength; i++) {
+        //debugger;
+        if (this.get(i)[majorDiagonalColumnIndexAtFirstRow+i] === 1) pieceCount++;
+      }
+      if (pieceCount > 1) return true;
       return false;
     },
 
     hasAnyMajorDiagonalConflicts: function(){
-    //  for (var i = 0; i < this.get('n'); i++) {
-    //    if (this.hasMajorDiagonalConflictAt(i) === true) return true;
-    //  }
+      for (var i = 0; i < this.get('n'); i++) {
+        if (this.get(0)[i] === 1 && this.hasMajorDiagonalConflictAt(i) === true) return true;
+      }
       return false; // fixme
     },
 
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow){
+      var pieceCount=1;
+      var diagonalLength = minorDiagonalColumnIndexAtFirstRow + 1;
+      for (var i = 1; i < diagonalLength; i++) {
+        //debugger;
+       if (this.get(i)[minorDiagonalColumnIndexAtFirstRow - i] === 1) pieceCount++;
+      }
+      if (pieceCount > 1) return true;
       return false; // fixme
     },
 
     hasAnyMinorDiagonalConflicts: function(){
-      return false; // fixme
+      for (var i = 0; i < this.get('n'); i++) {
+       if (this.get(0)[i] === 1 && this.hasMinorDiagonalConflictAt(i) === true) return true;
+     }
+      return false;
     }
 
   });
