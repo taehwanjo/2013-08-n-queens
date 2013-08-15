@@ -1,0 +1,34 @@
+  var findAllSolutions = function(n, prevBoard, level) {
+    var currentBoard = prevBoard || new Board({'n':n});
+    var currentLevel = level || 0;
+debugger;
+    for (var col = 0; col < n; col++) {
+      if (currentBoard.get(currentLevel)[col] === 0) {
+        currentBoard.togglePiece(currentLevel, col);
+        if (currentBoard.hasAnyRowConflicts() || currentBoard.hasAnyColConflicts()) {
+          currentBoard.togglePiece(currentLevel, col);
+        } else {
+          if (currentLevel === (n-1)) {
+            solutionsArray.push(currentBoard);
+            //currentBoard = new Board({'n':n});
+          } else {
+            currentLevel++;
+            findAllSolutions(n, currentBoard, currentLevel);
+          }
+        }
+      }
+    }
+  };
+
+
+  if (n === 0 || n === 1) {
+    return 1;
+  } else {
+    findAllSolutions(n);
+  }
+
+  solutionCount = solutionsArray.length;
+
+  console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
+  return solutionCount;
+};
