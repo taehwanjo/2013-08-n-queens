@@ -61,7 +61,7 @@
       // checks for a conflict at row index
       var pieceCount = 0;
       var row = this.get(rowIndex);
-      for (var i=0; i<row.length; i++) {
+      for (var i = 0; i < row.length; i++) {
         if (row[i] === 1) pieceCount++;
       }
       if (pieceCount > 1) return true;
@@ -70,7 +70,7 @@
 
     hasAnyRowConflicts: function(){
       // check for row conflicts for all the rows in n
-      for (var i=0; i<this.get('n'); i++) {
+      for (var i = 0; i < this.get('n'); i++) {
         if (this.hasRowConflictAt(i)) return true;
       }
       return false; // fixme
@@ -78,8 +78,8 @@
 
     hasColConflictAt: function(colIndex){
       var row;
-      var pieceCount=0;
-      for (var i=0; i<this.get('n'); i++) {
+      var pieceCount = 0;
+      for (var i = 0; i < this.get('n'); i++) {
           row = this.get(i);
           if (row[colIndex] === 1) pieceCount++;
       }
@@ -89,18 +89,18 @@
 
     hasAnyColConflicts: function(){
       //n^3 so let's refactor this later ^_^
-        for (var i=0; i<this.get('n'); i++) {
+        for (var i = 0; i < this.get('n'); i++) {
           if (this.hasColConflictAt(i) === true) return true;
         }
         return false;
     },
 
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow){
-      var pieceCount=1;
+      var pieceCount = 1;
       var diagonalLength = this.get('n') - majorDiagonalColumnIndexAtFirstRow;
       for (var i = 1; i < diagonalLength; i++) {
         //debugger;
-        if (this.get(i)[majorDiagonalColumnIndexAtFirstRow+i] === 1) pieceCount++;
+        if (this.get(i)[majorDiagonalColumnIndexAtFirstRow + i] === 1) pieceCount++;
       }
       if (pieceCount > 1) return true;
       return false;
@@ -130,7 +130,6 @@
      }
       return false;
     }
-
   });
 
   var makeEmptyMatrix = function(n){
