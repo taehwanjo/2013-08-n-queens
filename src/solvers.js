@@ -11,6 +11,8 @@ window.findNRooksSolution = function(n){
   // recurse on remaining squares.
 
 //var x = makeEmptyMatrix(this.get('n'));
+
+
   var columnStart = 0;
   var solution = new Board({'n':n});
     for(var x = 0; x < n; x++) { //explores 4 possibilities on a 4x4 board (x represents first 4 positions)
@@ -26,16 +28,57 @@ window.findNRooksSolution = function(n){
   return solution;
 };
 
-window.countNRooksSolutions = function(n){
-  var solutionCount = undefined; //fixme
+window.countNRooksSolutions = function(n, boardArg){
+
+//step 1: fresh board, no banned spaces, we put rook on first unbanned space, then iterate across ALL spaces on board.
+//step 2: ban the spaces threatened by rook, and then recurse.
+
+
+
+//done.
+  var solutionArray = [];
+  var solution = boardArg || new Board({'n':n});
+  pieceCount = 0;
+
+  //find first unbanned space
+  for (var y=0; y<n; y++) {
+    for (var x=0; x<n; x++) {
+      if (!hasRowConflictAt(y) && !hasColConflictAt(x)) {
+       solution.togglePiece(y,x);
+       pieceCount++;
+       if(pieceCount === n) {
+        solutionArray.push(solution);
+        pieceCount = 0; //reset piece count
+        return solutionArray;
+       } else {
+         solutionCount++;
+         solutionArray.concat(countNRooksSolutions(n, solution));
+       }
+     }
+    }
+  }
+
+//remove duplicates
+
+  solutionCount = solutionArray.length;
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
+
 };
 
 window.findNQueensSolution = function(n){
-  var solution = undefined; //fixme
-
+  var solution = new Board({'n':n});
+  var columnStart = 0;
+    for(var x = 0; x < n; x++) { //explores 4 possibilities on a 4x4 board (x represents first 4 positions)
+      for (var i = columnStart; i < n; i++) { //checks out every square
+        if(!solution.hasAnyRowConflicts && !solution.hasAnyColConflicts && !solution.hasAnyMajorDiagonalConflicts && !hasAnyMinorDiagonalConflicts) {
+          solution.togglePiece(x,i); //x is rowIndex, and i is columnIndex
+          i = n; //can no longer put piece on this row
+        }
+      columnStart++;
+      }
+    }
   console.log('Single solution for ' + n + ' queens:', solution);
   return solution;
 };
