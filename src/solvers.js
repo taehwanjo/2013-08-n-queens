@@ -31,23 +31,72 @@ window.findNRooksSolution = function(n){
 window.countNRooksSolutions = function(n){
   var solutionCount;
   var solutionsArray = [];
+  var locationsTried = [];
+
+  var resetLocationsTriedArray = function() {
+    for (var i=0; i<n; i++) {
+      locationsTried[i] = 0;
+    }
+  };
+
+  resetLocationsTriedArray();
+
+
+  var findFirstUntriedLocationThatDoesNotHaveAPieceAlready = function(colx, level){ //find first location that hasn't been tried yet
+    for (var i=0; i<n; i++) {
+        if (locationsTried[i] === 0) {
+          locationsTried[i] = 1;
+          if (this.currentBoard.get(level)[colx]===0) return true;
+        }
+      }
+    return false;
+  };
+
+  var allSpacesOnThisLevelTried = function(level) {
+    result = true;
+    for (var i=0; i<n; i++) {
+      if (locationsTried[i] === 0) {
+        result = false;
+      }
+    }
+
+    return result;
+  };
 
   var findAllSolutions = function(n, prevBoard, level) {
     var currentBoard = prevBoard || new Board({'n':n});
     var currentLevel = level || 0;
-debugger;
+//debugger;
     for (var col = 0; col < n; col++) {
-      if (currentBoard.get(currentLevel)[col] === 0) {
+      if (findFirstUntriedLocationThatDoesNotHaveAPieceAlready(col, currentLevel)) { //magic
         currentBoard.togglePiece(currentLevel, col);
         if (currentBoard.hasAnyRowConflicts() || currentBoard.hasAnyColConflicts()) {
           currentBoard.togglePiece(currentLevel, col);
         } else {
-          if (currentLevel === (n-1)) {
-            solutionsArray.push(currentBoard);
-            //currentBoard = new Board({'n':n});
+          if (currentLevel === (n-1)) { //if we found a complete solution
+            solutionsArray.push(currentBoard); //add solution to solution array
+            if (allSpacesOnThisLevelTried(currentLevel) === false) { //if all the spaces on this level have not been tried
+              currentBoard.togglePiece(currentLevel, col); //remove the last placed piece and move on.
+            } else {
+              return false; //if we found a complete solution and all the spaces on the last level have been tried,
+              // then we need to go UP to a previous stack OR depending on how the rest of the program is written,
+              // we can just end here and not do anything.
+            }
+
           } else {
-            currentLevel++;
-            findAllSolutions(n, currentBoard, currentLevel);
+
+            var lowerTreeResult = findAllSolutions(n, currentBoard, (currentLevel+1));
+            if (lowerTreeResult===false) {
+              if(allSpacesOnThisLevelTried(currentLevel) === false) {
+                currentBoard.togglePiece(currentLevel, col);
+              } else {
+                return false; //return false if all spaces on this level have been tried
+              }
+            } else {
+              currentLevel++; //there are solutions remaining to be found at the next level, let's explore
+              resetLocationsTriedArray(); //reset the locations array only when descending a level.
+            }
+
           }
         }
       }
