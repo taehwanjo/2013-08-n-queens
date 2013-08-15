@@ -28,7 +28,7 @@ window.findNRooksSolution = function(n){
   return solution;
 };
 
-window.countNRooksSolutions = function(n, boardArg){
+window.countNRooksSolutions = function(n, boardArg, oldPieceCount, isBranch){
 
 //step 1: fresh board, no banned spaces, we put rook on first unbanned space, then iterate across ALL spaces on board.
 //step 2: ban the spaces threatened by rook, and then recurse.
@@ -36,34 +36,62 @@ window.countNRooksSolutions = function(n, boardArg){
 
 
 //done.
-  var solutionArray = [];
-  var solution = boardArg || new Board({'n':n});
-  pieceCount = 0;
+var solution;
+
+  var solutionObject = {'solutionArray':[], newboard:false };
+  //debugger;
+  if (boardArg && solutionObject.newboard===false) {
+    solution = boardArg;
+  } else {
+    solution = new Board({'n':n});
+  }
+
+  var pieceCount = oldPieceCount || 0;
 
   //find first unbanned space
   for (var y=0; y<n; y++) {
     for (var x=0; x<n; x++) {
-      if (!hasRowConflictAt(y) && !hasColConflictAt(x)) {
-       solution.togglePiece(y,x);
-       pieceCount++;
-       if(pieceCount === n) {
-        solutionArray.push(solution);
-        pieceCount = 0; //reset piece count
-        return solutionArray;
-       } else {
-         solutionCount++;
-         solutionArray.concat(countNRooksSolutions(n, solution));
-       }
-     }
+      if(existingSolutions && existingSolutions[y][x]===0){
+      // when recursing, the togglePiece turns the first piece off!
+        if (solution.get(y)[x]===0) solution.togglePiece(y,x);
+        if (solution.hasRowConflictAt(y) || solution.hasColConflictAt(x)) {
+          solution.togglePiece(y,x);
+        } else {
+          pieceCount++;
+          if(pieceCount === n) {
+            solutionObject.solutionArray.push(solution);
+            pieceCount = 0; //reset piece count
+            if (isBranch) {
+              solutionObject[newboard] = true;
+              return solutionObject;
+            } else {
+              solutionObject[newboard] = false;
+            }
+          } else {
+            if (x!==n && y!==n) {
+              //debugger;
+              // solution is not being passed into the recursion
+              solutionObject.solutionArray.concat(countNRooksSolutions(n, solution, pieceCount, true));
+              if (solutionObject.newboard === true) {
+                solution = new Board({'n':n});
+                var existingSolutions = solutionObject.solutionArray;
+              }
+            }
+          }
+        }
+      }
     }
   }
 
 //remove duplicates
-
-  solutionCount = solutionArray.length;
+  solutionCount = solutionObject.solutionArray.length;
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-  return solutionCount;
+  if (solutionCount === 0) {
+    return 1;
+  } else {
+    return solutionCount;
+  }
 
 };
 

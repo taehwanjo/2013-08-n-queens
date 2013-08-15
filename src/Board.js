@@ -84,7 +84,7 @@
           if (row[colIndex] === 1) pieceCount++;
       }
       if (pieceCount > 1) return true;
-       // fixme
+      return false; // fixme
     },
 
     hasAnyColConflicts: function(){
