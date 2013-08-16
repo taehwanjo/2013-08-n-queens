@@ -137,7 +137,7 @@
       } else { //minorDiagonalColumnIndexAtFirstRow is negative
         var diagonalLength2 = this.get('n') - (minorDiagonalColumnIndexAtFirstRow - (this.get('n') - 1));
         for (var x = 0; x < diagonalLength2; x++) {
-          if (this.get(this.get('n') - x)[minorDiagonalColumnIndexAtFirstRow - x]) pieceCount++;
+          if (this.get((this.get('n') - diagonalLength2) + x)[(this.get('n')-1)-x]) pieceCount++;
         }
         if (pieceCount > 1) return true;
         return false;
@@ -145,7 +145,7 @@
     },
 
     hasAnyMinorDiagonalConflicts: function(){
-      for (var i = 0; i < this.get('n'); i++) {
+      for (var i = 0; i < (this.get('n') + this.get('n')); i++) {
        if (this.hasMinorDiagonalConflictAt(i) === true) return true;
      }
       return false;
