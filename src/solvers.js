@@ -120,7 +120,7 @@ window.countNQueensSolutions = function(n){
     for (var col = 0; col < n; col++) {
         if (currentLevel === 0) currentBoard = new Board({'n':n});
         currentBoard.togglePiece(currentLevel, col);
-        if (currentBoard.hasAnyColConflicts() || currentBoard.hasAnyRowConflicts() || currentBoard.hasAnyMajorDiagonalConflicts2() || currentBoard.hasAnyMinorDiagonalConflicts2()) {
+        if (currentBoard.hasAnyColConflicts() || currentBoard.hasAnyRowConflicts() || currentBoard.hasAnyMajorDiagonalConflicts() || currentBoard.hasAnyMinorDiagonalConflicts()) {
           currentBoard.togglePiece(currentLevel, col); //if conflict, branch is completely done! do nothing now.
         } else {
           //the piece is still there.
