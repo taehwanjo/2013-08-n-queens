@@ -31,76 +31,41 @@ window.findNRooksSolution = function(n){
 window.countNRooksSolutions = function(n){
   var solutionCount;
   var solutionsArray = [];
-  var locationsTried = [];
 
-  var resetLocationsTriedArray = function() {
-    for (var i=0; i<n; i++) {
-      locationsTried[i] = 0;
+  var reallySlowCopyBoard = function(obj) {
+    var copy = new Board({'n':n});
+    for (var i=0; i<n; i++){
+      copy.set(i, obj.get(i).concat());
     }
+    return copy;
   };
 
-  resetLocationsTriedArray();
-
-
-  var findFirstUntriedLocationThatDoesNotHaveAPieceAlready = function(colx, level){ //find first location that hasn't been tried yet
-    for (var i=0; i<n; i++) {
-        if (locationsTried[i] === 0) {
-          locationsTried[i] = 1;
-          if (this.currentBoard.get(level)[colx]===0) return true;
-        }
-      }
-    return false;
-  };
-
-  var allSpacesOnThisLevelTried = function(level) {
-    result = true;
-    for (var i=0; i<n; i++) {
-      if (locationsTried[i] === 0) {
-        result = false;
-      }
-    }
-
-    return result;
-  };
 
   var findAllSolutions = function(n, prevBoard, level) {
-    var currentBoard = prevBoard || new Board({'n':n});
-    var currentLevel = level || 0;
+    var currentBoard = prevBoard;
+    var currentLevel = (level+1) || 0;
+
 //debugger;
+
     for (var col = 0; col < n; col++) {
-      if (findFirstUntriedLocationThatDoesNotHaveAPieceAlready(col, currentLevel)) { //magic
+        if (currentLevel === 0) currentBoard = new Board({'n':n});
         currentBoard.togglePiece(currentLevel, col);
         if (currentBoard.hasAnyRowConflicts() || currentBoard.hasAnyColConflicts()) {
-          currentBoard.togglePiece(currentLevel, col);
+          currentBoard.togglePiece(currentLevel, col); //if conflict, branch is completely done! do nothing now.
         } else {
-          if (currentLevel === (n-1)) { //if we found a complete solution
-            solutionsArray.push(currentBoard); //add solution to solution array
-            if (allSpacesOnThisLevelTried(currentLevel) === false) { //if all the spaces on this level have not been tried
-              currentBoard.togglePiece(currentLevel, col); //remove the last placed piece and move on.
-            } else {
-              return false; //if we found a complete solution and all the spaces on the last level have been tried,
-              // then we need to go UP to a previous stack OR depending on how the rest of the program is written,
-              // we can just end here and not do anything.
-            }
-
+          //the piece is still there.
+          //base case
+          if (currentLevel === (n-1)) {
+            solutionsArray.push(currentBoard);
           } else {
-
-            var lowerTreeResult = findAllSolutions(n, currentBoard, (currentLevel+1));
-            if (lowerTreeResult===false) {
-              if(allSpacesOnThisLevelTried(currentLevel) === false) {
-                currentBoard.togglePiece(currentLevel, col);
-              } else {
-                return false; //return false if all spaces on this level have been tried
-              }
-            } else {
-              currentLevel++; //there are solutions remaining to be found at the next level, let's explore
-              resetLocationsTriedArray(); //reset the locations array only when descending a level.
-            }
-
+          //step case
+            var levelBoard = reallySlowCopyBoard(currentBoard);
+            currentBoard.togglePiece(currentLevel,col);
+            findAllSolutions(n, levelBoard, currentLevel);
           }
+
         }
       }
-    }
   };
 
 
@@ -134,7 +99,55 @@ window.findNQueensSolution = function(n){
 };
 
 window.countNQueensSolutions = function(n){
-  var solutionCount = undefined; //fixme
+  var solutionCount;
+  var solutionsArray = [];
+
+  var reallySlowCopyBoard = function(obj) {
+    var copy = new Board({'n':n});
+    for (var i=0; i<n; i++){
+      copy.set(i, obj.get(i).concat());
+    }
+    return copy;
+  };
+
+
+  var findAllSolutions = function(n, prevBoard, level) {
+    var currentBoard = prevBoard;
+    var currentLevel = (level+1) || 0;
+
+//debugger;
+
+    for (var col = 0; col < n; col++) {
+        if (currentLevel === 0) currentBoard = new Board({'n':n});
+        currentBoard.togglePiece(currentLevel, col);
+        if (currentBoard.hasAnyColConflicts() || currentBoard.hasAnyRowConflicts() || currentBoard.hasAnyMajorDiagonalConflicts2() || currentBoard.hasAnyMinorDiagonalConflicts2()) {
+          currentBoard.togglePiece(currentLevel, col); //if conflict, branch is completely done! do nothing now.
+        } else {
+          //the piece is still there.
+          //base case
+          if (currentLevel === (n-1)) {
+            solutionsArray.push(currentBoard);
+          } else {
+          //step case
+            var levelBoard = reallySlowCopyBoard(currentBoard);
+            currentBoard.togglePiece(currentLevel,col);
+            findAllSolutions(n, levelBoard, currentLevel);
+          }
+
+        }
+      }
+  };
+
+
+  if (n === 0 || n === 1) {
+    return 1;
+  } else if (n === 2 || n === 3) {
+    return 0;
+  } else {
+    findAllSolutions(n);
+  }
+
+  solutionCount = solutionsArray.length;
 
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
