@@ -141,8 +141,8 @@ window.countNQueensSolutions = function(n){
 
   if (n === 0 || n === 1) {
     return 1;
-  } else if (n === 2 || n === 3) {
-    return 0;
+  //} else if (n === 2 || n === 3) {
+  //  return 0;
   } else {
     findAllSolutions(n);
   }
